@@ -1,0 +1,121 @@
+apiVersion: v1
+data:
+  access.key: Uld**********************=
+  secret.key: dE****************************************************==
+kind: Secret
+metadata:
+  name: obs-airflow-secret
+  namespace: airflow
+  labels:
+    secret.kubernetes.io/used-by: csi
+type: cfe/secure-opaque
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: everest-csi-provisioner
+    everest.io/reclaim-policy: retain-volume-only
+  name: pv-obs-airflow-dags
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  csi:
+    driver: obs.csi.everest.io
+    volumeHandle: pfs-**********    # Name of the OBS volume.
+    fsType: obsfs
+    volumeAttributes:
+      storage.kubernetes.io/csiProvisionerIdentity: everest-csi-provisioner
+      everest.io/obs-volume-type: STANDARD
+      everest.io/region: sa-brazil-1        # Region where the OBS volume is
+      # (Optional) Enterprise project ID. If an enterprise project is specified,
+      # use the same enterprise project when creating a PVC.
+      # Otherwise, the PVC cannot be bound to a PV.
+      everest.io/enterprise-project-id: 83*******************************6d9
+    nodePublishSecretRef:
+      name: obs-airflow-secret
+      namespace: airflow
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: csi-obs
+  mountOptions: []
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-obs-airflow-dags
+  namespace: airflow
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: everest-csi-provisioner
+    everest.io/obs-volume-type: STANDARD
+    csi.storage.k8s.io/fstype: obsfs
+    csi.storage.k8s.io/node-publish-secret-name: obs-airflow-secret
+    csi.storage.k8s.io/node-publish-secret-namespace: airflow
+    # (Optional) Enterprise project ID. If an enterprise project is specified,
+    # use the same enterprise project as the PV.
+    # Otherwise, the PVC cannot be bound to a PV.
+    everest.io/enterprise-project-id: 83*******************************6d9
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-obs
+  volumeName: pv-obs-airflow-dags
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: everest-csi-provisioner
+    everest.io/reclaim-policy: retain-volume-only
+  name: pv-obs-airflow-logs
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  csi:
+    driver: obs.csi.everest.io
+    volumeHandle: pfs-*******    # Name of the OBS volume.
+    fsType: obsfs
+    volumeAttributes:
+      storage.kubernetes.io/csiProvisionerIdentity: everest-csi-provisioner
+      everest.io/obs-volume-type: STANDARD
+      everest.io/region: sa-brazil-1    # Region where the OBS volume is.
+      # (Optional) Enterprise project ID. If an enterprise project is specified,
+      # use the same enterprise project when creating a PVC.
+      # Otherwise, the PVC cannot be bound to a PV.
+      everest.io/enterprise-project-id: 83*******************************6d9
+    nodePublishSecretRef:
+      name: obs-airflow-secret
+      namespace: airflow
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: csi-obs
+  mountOptions: []
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-obs-airflow-logs
+  namespace: airflow
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: everest-csi-provisioner
+    everest.io/obs-volume-type: STANDARD
+    csi.storage.k8s.io/fstype: obsfs
+    csi.storage.k8s.io/node-publish-secret-name: obs-airflow-secret
+    csi.storage.k8s.io/node-publish-secret-namespace: airflow
+    # (Optional) Enterprise project ID. If an enterprise project is specified,
+    # use the same enterprise project as the PV.
+    # Otherwise, the PVC cannot be bound to a PV.
+    everest.io/enterprise-project-id: 83*******************************6d9
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-obs
+  volumeName: pv-obs-airflow-logs

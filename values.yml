@@ -1,0 +1,30 @@
+useStandardNaming: true
+global:
+  storageClass: csi-disk
+dags:
+  persistence:
+    enabled: true
+    existingClaim: pvc-obs-airflow-dags
+  gitSync:
+    enabled: false
+logs:
+  persistence:
+    enabled: true
+    existingClaim: pvc-obs-airflow-logs
+redis:
+  persistence:
+    storageClassName: csi-disk
+postgresql:
+  enabled: false
+data:
+  metadataConnection:
+    user: airflow
+    pass: G35*******************BgH
+    protocol: postgresql
+    host: postgresql
+    port: 5432
+    db: airflow
+webserver:
+  defaultUser:
+    password: r7d******************YA
+webserverSecretKey: cd**************************a1
